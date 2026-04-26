@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Enterprise Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f7f6f3;
+  --bg-tertiary: #f0efe9;
+  --text-primary: #1a1917;
+  --text-secondary: #6b6a65;
+  --text-tertiary: #9e9d98;
+  --border: rgba(26,25,23,0.10);
+  --border-em: rgba(26,25,23,0.20);
+  --accent: oklch(48% 0.07 290);
+  --accent-mid: oklch(60% 0.07 290);
+  --accent-bg: oklch(97% 0.015 290);
+  --accent-border: oklch(60% 0.07 290 / 0.35);
+  --rad-sm: 6px;
+  --rad-md: 8px;
+  --rad-lg: 12px;
+  --gap: 10px;
+  --font: 'DM Sans', sans-serif;
+  --font-mono: 'DM Mono', monospace;
+  --green-bg: #EAF3DE; --green-text: #3B6D11; --green-mid: #97C459;
+  --amber-bg: #FAEEDA; --amber-text: #854F0B; --amber-mid: #FAC775;
+  --red-bg: #FCEBEB; --red-text: #A32D2D; --red-mid: #F09595;
+  --blue-bg: #E6F1FB; --blue-text: #185FA5; --blue-mid: #85B7EB;
+  --h0-bg: #F1EFE8; --h0-text: #888780;
+  --h1-bg: #EAF3DE; --h1-text: #27500A;
+  --h2-bg: #FAEEDA; --h2-text: #633806;
+  --h3-bg: #FCEBEB; --h3-text: #791F1F;
+  --h4-bg: #F09595; --h4-text: #791F1F;
+}
+.dark-mode {
+  --bg-primary: #1c1b18;
+  --bg-secondary: #242320;
+  --bg-tertiary: #2e2c28;
+  --text-primary: #f0efe9;
+  --text-secondary: #9e9d98;
+  --text-tertiary: #6b6a65;
+  --border: rgba(240,239,233,0.10);
+  --border-em: rgba(240,239,233,0.20);
+  --accent-bg: oklch(18% 0.03 290);
+  --h0-bg: #2a2924; --h0-text: #888780;
+  --h1-bg: #1e2e13; --h1-text: #7ab84a;
+  --h2-bg: #2e2010; --h2-text: #d4924a;
+  --h3-bg: #2e1515; --h3-text: #d07070;
+  --h4-bg: #4a1f1f; --h4-text: #e09090;
+  --green-bg: #1a2e10; --green-text: #7ab84a;
+  --amber-bg: #2e2010; --amber-text: #d4924a;
+  --red-bg: #2e1515; --red-text: #d07070;
+  --blue-bg: #0f2236; --blue-text: #5a9cd6;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:14px}
+body{font-family:var(--font);background:var(--bg-tertiary);color:var(--text-primary);min-height:100vh;transition:background 0.25s,color 0.25s}
+.shell{max-width:1280px;margin:0 auto;padding:0 2rem 3rem}
+
+/* HEADER */
+.header{display:flex;align-items:center;justify-content:space-between;padding:1.25rem 0 0}
+.header-brand{display:flex;align-items:center;gap:10px}
+.header-text{display:flex;flex-direction:column;gap:1px}
+.header-org{font-size:10px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent)}
+.header-title{font-size:15px;font-weight:500;letter-spacing:-0.02em;color:var(--text-primary)}
+.header-meta{font-size:11px;color:var(--text-tertiary);font-family:var(--font-mono);letter-spacing:0.02em;display:none}
+
+/* NAV ROW */
+.nav-row{display:flex;align-items:stretch;justify-content:space-between;border-bottom:1px solid var(--border);margin-bottom:1.5rem;margin-top:1rem}
+.tabs{display:flex;gap:2px;align-items:flex-end}
+.tab{padding:9px 20px;font-size:12px;font-weight:500;font-family:var(--font);color:var(--text-secondary);cursor:pointer;border:1px solid transparent;border-bottom:none;border-radius:6px 6px 0 0;background:transparent;margin-bottom:-1px;transition:all 0.15s;letter-spacing:0.01em}
+.tab:hover{color:var(--text-primary);background:var(--bg-secondary)}
+.tab.active{color:var(--text-primary);background:var(--bg-primary);border-color:var(--border);border-bottom-color:var(--bg-primary);box-shadow:inset 0 2px 0 var(--accent-mid)}
+
+/* FILTER STRIP */
+.filter-strip{display:flex;align-items:center;gap:8px;padding-bottom:9px;flex-wrap:nowrap}
+.fsep{width:1px;height:14px;background:var(--border)}
+.fg{display:flex;align-items:center;gap:4px}
+.fg label{font-size:11px;color:var(--text-secondary);white-space:nowrap;font-family:var(--font)}
+.fg select{font-size:11px;font-family:var(--font);padding:3px 5px;border-radius:var(--rad-sm);border:1px solid var(--border);background:var(--bg-secondary);color:var(--text-secondary);cursor:pointer;max-width:130px;transition:border-color 0.15s}
+.fg select:focus{outline:none;border-color:var(--accent-border)}
+
+/* CONTENT */
+.content{background:var(--bg-primary);border:1px solid var(--border);border-radius:var(--rad-lg);padding:1.5rem;margin-bottom:1rem}
+
+/* METRICS */
+.metrics-row{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--gap);margin-bottom:1.5rem}
+.met{background:var(--bg-secondary);border-radius:var(--rad-md);padding:0.875rem 1rem;border:1px solid var(--border)}
+.met-lbl{font-size:10px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:6px;font-weight:500}
+.met-val{font-size:26px;font-weight:300;color:var(--text-primary);line-height:1;letter-spacing:-0.02em}
+.met-sub{font-size:11px;margin-top:4px}
+.sec-lbl{font-size:10px;font-weight:500;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:0.09em;margin-bottom:0.75rem}
+
+/* RISK STRIP */
+.risk-strip{background:var(--red-bg);border:1px solid var(--red-mid);border-radius:var(--rad-md);padding:8px 12px;margin-bottom:1.25rem;display:flex;align-items:center;gap:8px;font-size:12px;color:var(--red-text);flex-wrap:wrap}
+
+/* DIVIDER */
+.section-divider{height:1px;background:var(--border);margin:1.5rem 0}
+
+/* PORTFOLIO CARDS */
+.pf-row{display:grid;grid-template-columns:repeat(5,1fr);gap:var(--gap);margin-bottom:1.75rem}
+.pf-card{background:var(--bg-secondary);border:1px solid var(--border);border-radius:var(--rad-lg);padding:0.875rem 1rem;cursor:pointer;transition:border-color 0.15s,background 0.15s}
+.pf-card:hover{border-color:var(--border-em)}
+.pf-card.active{border:1.5px solid var(--accent-border);background:var(--accent-bg)}
+.pf-name{font-size:11px;font-weight:500;color:var(--text-primary);margin-bottom:6px;line-height:1.3}
+.pf-count{font-size:22px;font-weight:300;color:var(--text-primary);letter-spacing:-0.02em}
+.pf-count span{font-size:11px;font-weight:400;color:var(--text-secondary);letter-spacing:0}
+.pf-bar-wrap{margin-top:8px;height:3px;border-radius:2px;background:var(--border);overflow:hidden}
+.pf-bar{height:100%;border-radius:2px;background:var(--accent-mid);transition:width 0.4s ease}
+.pf-note{font-size:11px;margin-top:6px}
+
+/* RAG LEGEND */
+.rag-legend{display:flex;gap:16px;margin-bottom:0.875rem;align-items:center;flex-wrap:wrap}
+.rag-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text-secondary)}
+.rdot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+
+/* INITIATIVE CARDS */
+.init-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:var(--gap);margin-bottom:1.75rem}
+.init-card{background:var(--bg-secondary);border:1px solid var(--border);border-radius:var(--rad-lg);padding:0.875rem 1rem;cursor:default;position:relative;transition:border-color 0.15s}
+.init-card:hover{border-color:var(--border-em)}
+.init-card.rb{border:1.5px solid var(--red-mid)}
+.init-card.ab{border:1.5px solid var(--amber-mid)}
+.init-card .tooltip-box{display:none;position:absolute;bottom:calc(100% + 6px);left:0;right:0;background:var(--bg-primary);border:1px solid var(--border-em);border-radius:var(--rad-md);padding:9px 11px;font-size:11px;color:var(--text-secondary);line-height:1.6;z-index:10;pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,0.08)}
+.init-card:hover .tooltip-box{display:block}
+.init-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+.init-name{font-size:13px;font-weight:500;color:var(--text-primary);flex:1;letter-spacing:-0.01em;line-height:1.3}
+.rag-badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:500;margin-left:8px;white-space:nowrap;letter-spacing:0.02em}
+.rag-g{background:var(--green-bg);color:var(--green-text)}
+.rag-a{background:var(--amber-bg);color:var(--amber-text)}
+.rag-r{background:var(--red-bg);color:var(--red-text)}
+.rag-c{background:var(--blue-bg);color:var(--blue-text)}
+.init-meta{display:flex;gap:14px;margin-bottom:10px;flex-wrap:wrap}
+.imt{font-size:11px;color:var(--text-secondary)}
+.imt span{color:var(--text-primary);font-weight:500}
+.prog-lbl{display:flex;justify-content:space-between;font-size:11px;color:var(--text-secondary);margin-bottom:5px}
+.pw{height:4px;border-radius:3px;background:var(--border);overflow:hidden}
+.pb{height:100%;border-radius:3px;transition:width 0.4s ease}
+.init-tags{display:flex;gap:4px;margin-top:10px;flex-wrap:wrap}
+.itag{font-size:10px;background:var(--bg-primary);border-radius:var(--rad-sm);padding:2px 8px;color:var(--text-secondary);border:1px solid var(--border);letter-spacing:0.02em}
+
+/* TIMELINE */
+.tl-section{margin-bottom:1.75rem}
+.tl-legend{display:flex;gap:16px;margin-bottom:10px;align-items:center;font-size:11px;color:var(--text-secondary)}
+.tl-grid{display:grid;grid-template-columns:165px 1fr;gap:0}
+.tl-labels{display:flex;flex-direction:column}
+.tl-rl{font-size:11px;color:var(--text-secondary);height:30px;display:flex;align-items:center;padding-right:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tl-chart-area{position:relative}
+.tl-months{display:grid;border-bottom:1px solid var(--border);margin-bottom:4px}
+.tl-mon{font-size:10px;color:var(--text-tertiary);text-align:center;padding-bottom:5px;font-family:var(--font);letter-spacing:0.02em}
+.tl-rows{display:flex;flex-direction:column;gap:3px;position:relative}
+.tl-br{height:28px;display:grid;align-items:center;position:relative}
+.tl-bar{height:20px;border-radius:var(--rad-sm);display:flex;align-items:center;padding:0 8px;font-size:10px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tl-today-line{position:absolute;top:0;bottom:0;width:1.5px;background:var(--accent);opacity:0.9;pointer-events:none;z-index:2}
+.gl-flag{position:absolute;top:3px;z-index:3;cursor:default}
+.gl-flag .flag-pole{width:1.5px;height:22px;background:var(--text-primary);opacity:0.5;position:absolute;top:0;left:0}
+.gl-flag .flag-tri{width:0;height:0;border-top:5px solid var(--text-primary);border-right:7px solid transparent;opacity:0.5;position:absolute;top:0;left:1.5px}
+.gl-flag .flag-tip{display:none;position:absolute;top:28px;left:-24px;background:var(--bg-primary);border:1px solid var(--border-em);border-radius:var(--rad-md);padding:5px 9px;font-size:10px;color:var(--text-primary);white-space:nowrap;z-index:20;font-family:var(--font);box-shadow:0 4px 12px rgba(0,0,0,0.08)}
+.gl-flag:hover .flag-tip{display:block}
+
+/* RISKS */
+.ri-section{margin-bottom:1rem}
+.ri-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--gap)}
+.ri-card{background:var(--bg-secondary);border:1px solid var(--border);border-radius:var(--rad-lg);padding:0.875rem 1rem}
+.ri-head{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+.ri-title{font-size:12px;font-weight:500;color:var(--text-primary);flex:1;letter-spacing:-0.01em}
+.ri-sev{font-size:10px;padding:2px 8px;border-radius:10px;font-weight:500;flex-shrink:0;letter-spacing:0.02em}
+.sev-h{background:var(--red-bg);color:var(--red-text)}
+.sev-m{background:var(--amber-bg);color:var(--amber-text)}
+.sev-l{background:var(--green-bg);color:var(--green-text)}
+.ri-meta{font-size:11px;color:var(--text-secondary);margin-bottom:5px}
+.ri-meta span{color:var(--text-primary);font-weight:500}
+.ri-desc{font-size:11px;color:var(--text-secondary);line-height:1.6}
+.ri-action{margin-top:8px;padding-top:8px;border-top:1px solid var(--border);font-size:11px;color:var(--text-secondary)}
+.ri-action span{color:var(--text-primary);font-weight:500}
+
+/* HEATMAP */
+.heat-wrap{overflow-x:auto}
+.heat-table{width:100%;border-collapse:collapse;font-size:11px;min-width:400px}
+.heat-table th{font-size:10px;font-weight:500;color:var(--text-secondary);padding:6px 4px;text-align:center;border-bottom:1px solid var(--border);background:var(--bg-secondary);white-space:nowrap;letter-spacing:0.03em}
+.heat-table th.rh{text-align:left;min-width:160px;padding-left:8px}
+.heat-table td{padding:5px 4px;border:1px solid var(--border);text-align:center;font-size:11px;font-weight:500;cursor:default;position:relative;font-family:var(--font-mono)}
+.heat-table td.rl{text-align:left;font-size:12px;font-weight:500;color:var(--text-primary);background:var(--bg-secondary);padding:7px 8px;white-space:nowrap;font-family:var(--font)}
+.h0{background:var(--h0-bg);color:var(--h0-text)}
+.h1{background:var(--h1-bg);color:var(--h1-text)}
+.h2{background:var(--h2-bg);color:var(--h2-text)}
+.h3{background:var(--h3-bg);color:var(--h3-text)}
+.h4{background:var(--h4-bg);color:var(--h4-text)}
+
+/* READINESS TABLE */
+.ready-table-wrap{overflow-x:auto;margin-bottom:1rem;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
+.ready-table-wrap::-webkit-scrollbar{height:4px}
+.ready-table-wrap::-webkit-scrollbar-track{background:transparent}
+.ready-table-wrap::-webkit-scrollbar-thumb{background:var(--border-em);border-radius:2px}
+.ready-table{border-collapse:collapse;font-size:11px;table-layout:fixed}
+.ready-table th{font-size:10px;font-weight:500;color:var(--text-secondary);letter-spacing:0.03em;padding:6px 6px;border:1px solid var(--border);background:var(--bg-secondary);text-align:center;white-space:nowrap}
+.ready-table th.prog-h{text-align:left;width:200px;min-width:200px}
+.ready-table th.grp-h{border-bottom:none;padding-bottom:2px;font-size:10px;color:var(--text-primary);font-weight:500;text-transform:none;letter-spacing:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:0}
+.ready-table td{padding:5px 6px;border:1px solid var(--border);text-align:center;vertical-align:middle}
+.ready-table td.prog-name{text-align:left;font-size:12px;font-weight:500;color:var(--text-primary);background:var(--bg-secondary);white-space:nowrap;padding:6px 8px;width:200px;min-width:200px}
+.impact-H{background:var(--red-bg);color:var(--red-text);font-size:10px;padding:2px 6px;border-radius:5px;font-weight:500;display:inline-block}
+.impact-M{background:var(--amber-bg);color:var(--amber-text);font-size:10px;padding:2px 6px;border-radius:5px;font-weight:500;display:inline-block}
+.impact-L{background:var(--green-bg);color:var(--green-text);font-size:10px;padding:2px 6px;border-radius:5px;font-weight:500;display:inline-block}
+.impact-N{background:var(--h0-bg);color:var(--h0-text);font-size:10px;padding:2px 6px;border-radius:5px;font-weight:500;display:inline-block}
+.icon-ready{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:var(--green-bg)}
+.icon-notready{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:var(--red-bg)}
+.icon-na{display:inline-flex;align-items:center;justify-content:center;font-size:10px;color:var(--h0-text);font-weight:500;width:20px;height:20px}
+.ready-legend{display:flex;gap:14px;margin-bottom:0.875rem;flex-wrap:wrap;align-items:center;font-size:11px;color:var(--text-secondary)}
+.ready-legend strong{font-weight:500;color:var(--text-secondary)}
+.view{display:none}
+.view.active{display:block}
+
+/* DARK MODE TOGGLE */
+.dm-toggle{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-secondary);cursor:pointer;user-select:none}
+.dm-toggle input{display:none}
+.dm-switch{width:28px;height:16px;border-radius:8px;background:var(--border-em);position:relative;transition:background 0.2s;flex-shrink:0}
+.dm-switch::after{content:'';position:absolute;top:2px;left:2px;width:12px;height:12px;border-radius:50%;background:var(--text-secondary);transition:transform 0.2s}
+.dm-toggle input:checked+.dm-switch{background:var(--accent-mid)}
+.dm-toggle input:checked+.dm-switch::after{transform:translateX(12px);background:#fff}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<div class="header">
+  <div class="header-brand">
+    <svg width="26" height="26" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <polygon points="14,2 26,14 14,26 2,14" fill="none" stroke="var(--accent)" stroke-width="1.5"/>
+      <polygon points="14,7 21,14 14,21 7,14" fill="var(--accent)" opacity="0.2"/>
+      <circle cx="14" cy="14" r="2.5" fill="var(--accent)" opacity="0.7"/>
+    </svg>
+    <div class="header-text">
+      <div class="header-org" id="header-org">Strategy &amp; Transformation</div>
+      <div class="header-title">Enterprise Dashboard</div>
+    </div>
+  </div>
+  <label class="dm-toggle" title="Toggle dark mode">
+    <input type="checkbox" id="dm-check" onchange="toggleDark(this.checked)">
+    <span class="dm-switch"></span>
+    Dark mode
+  </label>
+</div>
+
+<div class="nav-row">
+  <div class="tabs">
+    <button class="tab active" id="tab-init" onclick="switchTab('init')">Initiatives</button>
+    <button class="tab" id="tab-stk" onclick="switchTab('stk')">Stakeholders</button>
+  </div>
+  <div class="filter-strip">
+    <div class="fg">
+      <label for="f-yr">Year</label>
+      <select id="f-yr" onchange="applyFilters()">
+        <option value="FY25">FY 24–25</option>
+        <option value="FY26" selected>FY 25–26</option>
+        <option value="FY27">FY 26–27</option>
+      </select>
+    </div>
+    <div class="fg">
+      <label for="f-qtr">Quarter</label>
+      <select id="f-qtr" onchange="applyFilters()">
+        <option value="all">All</option>
+        <option value="Q1">Q1</option>
+        <option value="Q2">Q2</option>
+        <option value="Q3">Q3</option>
+        <option value="Q4">Q4</option>
+      </select>
+    </div>
+    <div class="fsep"></div>
+    <div class="fg">
+      <label for="f-pf">Portfolio</label>
+      <select id="f-pf" onchange="applyFilters()">
+        <option value="all">All</option>
+        <option value="A">AI, Data &amp; Technology</option>
+        <option value="B">People</option>
+        <option value="C">Customer &amp; Growth</option>
+        <option value="D">Corporate Functions</option>
+      </select>
+    </div>
+    <div class="fg">
+      <label for="f-ba">Business Area</label>
+      <select id="f-ba" onchange="applyFilters()">
+        <option value="all">All</option>
+        <option value="ba1">Operations</option>
+        <option value="ba2">Finance</option>
+        <option value="ba3">People</option>
+        <option value="ba4">Customer Service</option>
+        <option value="ba5">Sales</option>
+        <option value="ba6">Marketing</option>
+        <option value="ba7">Strategy</option>
+        <option value="ba8">Legal</option>
+        <option value="ba9">Risk &amp; Compliance</option>
+        <option value="ba10">Corporate Affairs</option>
+      </select>
+    </div>
+    <div class="fsep"></div>
+    <div class="fg">
+      <label for="f-type">Priority</label>
+      <select id="f-type" onchange="applyFilters()">
+        <option value="all">All</option>
+        <option value="Strategic">Strategic</option>
+        <option value="BAU">BAU</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+<div class="content">
+
+<!-- INITIATIVES TAB -->
+<div id="view-init" class="view active">
+  <div class="metrics-row" id="metrics-row"></div>
+  <div class="section-divider"></div>
+  <div class="sec-lbl">Portfolios</div>
+  <div class="pf-row" id="pf-row"></div>
+  <div class="section-divider"></div>
+  <div class="sec-lbl">Initiatives</div>
+  <div class="rag-legend">
+    <div class="rag-item"><div class="rdot" style="background:var(--green-mid)"></div>On Track</div>
+    <div class="rag-item"><div class="rdot" style="background:var(--amber-mid)"></div>At Risk</div>
+    <div class="rag-item"><div class="rdot" style="background:var(--red-mid)"></div>Delayed</div>
+    <div class="rag-item"><div class="rdot" style="background:var(--blue-mid)"></div>Complete</div>
+  </div>
+  <div class="init-grid" id="init-grid"></div>
+  <div class="section-divider"></div>
+  <div class="tl-section">
+    <div class="sec-lbl">Timeline</div>
+    <div class="tl-legend">
+      <span style="display:flex;align-items:center;gap:6px">
+        <span style="width:14px;height:1.5px;background:var(--accent);display:inline-block;border-radius:1px;opacity:0.9"></span>Today
+      </span>
+      <span style="display:flex;align-items:center;gap:5px">
+        <span style="position:relative;display:inline-block;width:10px;height:14px;flex-shrink:0;opacity:0.5"><span style="position:absolute;left:0;top:0;width:1.5px;height:14px;background:currentColor;display:block"></span><span style="position:absolute;left:1.5px;top:0;width:0;height:0;border-top:5px solid currentColor;border-right:7px solid transparent;display:block"></span></span>
+        Go-live date
+      </span>
+    </div>
+    <div class="tl-grid">
+      <div class="tl-labels" id="tl-labels"></div>
+      <div class="tl-chart-area" id="tl-chart"></div>
+    </div>
+  </div>
+  <div class="section-divider"></div>
+  <div class="ri-section">
+    <div class="sec-lbl">Top Risks &amp; Issues</div>
+    <div class="ri-grid" id="init-ri-grid"></div>
+  </div>
+</div>
+
+<!-- STAKEHOLDERS TAB -->
+<div id="view-stk" class="view">
+  <div class="metrics-row" id="stk-metrics-row"></div>
+  <div class="section-divider"></div>
+  <div class="sec-lbl">Change Load</div>
+  <div style="display:flex;gap:12px;margin-bottom:0.875rem;flex-wrap:wrap;font-size:11px;color:var(--text-secondary);align-items:center">
+    <span style="display:flex;align-items:center;gap:4px"><span style="width:12px;height:12px;border-radius:2px;background:var(--h1-bg);border:1px solid var(--border);display:inline-block"></span>1–2 Low</span>
+    <span style="display:flex;align-items:center;gap:4px"><span style="width:12px;height:12px;border-radius:2px;background:var(--h2-bg);border:1px solid var(--border);display:inline-block"></span>3–4 Medium</span>
+    <span style="display:flex;align-items:center;gap:4px"><span style="width:12px;height:12px;border-radius:2px;background:var(--h3-bg);border:1px solid var(--border);display:inline-block"></span>5–6 High</span>
+    <span style="display:flex;align-items:center;gap:4px"><span style="width:12px;height:12px;border-radius:2px;background:var(--h4-bg);border:1px solid var(--border);display:inline-block"></span>7+ Critical</span>
+  </div>
+  <div class="heat-wrap"><table class="heat-table" id="heat-table"></table></div>
+  <div class="section-divider"></div>
+  <div>
+    <div class="sec-lbl">Change Impact &amp; Readiness</div>
+    <div class="ready-legend">
+      <strong>Impact:</strong>
+      <span class="impact-H">High</span><span class="impact-M">Medium</span><span class="impact-L">Low</span><span class="impact-N">None</span>
+      <strong style="margin-left:6px">Readiness:</strong>
+      <span style="display:flex;align-items:center;gap:4px">
+        <span class="icon-ready"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><polyline points="2,6 5,9 10,3" stroke="#3B6D11" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Ready
+      </span>
+      <span style="display:flex;align-items:center;gap:4px">
+        <span class="icon-notready"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><line x1="3" y1="3" x2="9" y2="9" stroke="#A32D2D" stroke-width="1.8" stroke-linecap="round"/><line x1="9" y1="3" x2="3" y2="9" stroke="#A32D2D" stroke-width="1.8" stroke-linecap="round"/></svg></span>Not Ready
+      </span>
+      <span style="display:flex;align-items:center;gap:4px"><span class="icon-na">N/A</span>N/A</span>
+    </div>
+    <div class="ready-table-wrap"><table class="ready-table" id="ready-table"></table></div>
+  </div>
+  <div class="section-divider"></div>
+  <div class="ri-section">
+    <div class="sec-lbl">Top Risks &amp; Issues</div>
+    <div class="ri-grid" id="stk-ri-grid"></div>
+  </div>
+</div>
+
+</div>
+</div>
+
+<!-- HEAT TOOLTIP -->
+<div id="heat-tooltip" style="display:none;position:fixed;background:var(--bg-primary);border:1px solid var(--border-em);border-radius:var(--rad-md);padding:9px 11px;font-size:11px;color:var(--text-primary);z-index:9999;pointer-events:none;min-width:200px;max-width:260px;box-shadow:0 4px 16px rgba(0,0,0,0.12);font-family:var(--font);line-height:1.5"></div>
+
+<script>
+/* ── DATA ─────────────────────────────────────────────────────────────── */
+const PF_NAMES = {A:'AI, Data & Technology', B:'People', C:'Customer & Growth', D:'Corporate Functions'};
+const BIZ_AREAS = ['Operations','Finance','People','Customer Service','Sales','Marketing','Strategy','Legal','Risk & Compliance','Corporate Affairs'];
+const BIZ_KEYS = ['ba1','ba2','ba3','ba4','ba5','ba6','ba7','ba8','ba9','ba10'];
+const BA_NAMES = {ba1:'Operations',ba2:'Finance',ba3:'People',ba4:'Customer Service',ba5:'Sales',ba6:'Marketing',ba7:'Strategy',ba8:'Legal',ba9:'Risk & Compliance',ba10:'Corporate Affairs'};
+const FY_MONTHS = {
+  FY25:['Jul 24','Aug 24','Sep 24','Oct 24','Nov 24','Dec 24','Jan 25','Feb 25','Mar 25','Apr 25','May 25','Jun 25'],
+  FY26:['Jul 25','Aug 25','Sep 25','Oct 25','Nov 25','Dec 25','Jan 26','Feb 26','Mar 26','Apr 26','May 26','Jun 26'],
+  FY27:['Jul 26','Aug 26','Sep 26','Oct 26','Nov 26','Dec 26','Jan 27','Feb 27','Mar 27','Apr 27','May 27','Jun 27'],
+};
+const QTR_OFFSET = {Q1:0,Q2:3,Q3:6,Q4:9};
+
+const INITIATIVES = [
+  {id:1,name:'ERP Modernisation',portfolio:'A',ba:'ba2',type:'Strategic',fy:'FY26',q:'Q3',status:'c',progress:100,sponsor:'COO',impact:'High',goLiveDisplay:'Nov 25',bizAreas:['ba2','ba1','ba7'],roles:['Executives','Senior Leaders','Middle Managers','Operational Enablers'],tlStart:0,tlEnd:4,goLives:[{month:4,date:'Nov 25 — Phase 1 core rollout'}],activeMonths:[0,1,2,3,4],desc:'Core ERP modernisation across finance and supply chain successfully delivered. Phase 1 (financial reporting) went live Nov 25. Phase 2 (supply chain) embedded and closed out.',bizImpact:{ba2:{impact:'H',ready:'R'},ba1:{impact:'M',ready:'R'},ba7:{impact:'L',ready:'R'}}},
+  {id:2,name:'Cloud Infrastructure Migration',portfolio:'A',ba:'ba1',type:'Strategic',fy:'FY26',q:'Q4',status:'a',progress:55,sponsor:'CTO',impact:'High',goLiveDisplay:'Jun 26',bizAreas:['ba1','ba9','ba4'],roles:['Executives','Senior Leaders','Middle Managers','Operational Enablers','Frontline'],tlStart:1,tlEnd:11,goLives:[{month:5,date:'Dec 25 — UAT sign-off'},{month:11,date:'Jun 26 — Full deployment'}],activeMonths:[1,2,3,4,5,6,7,8,9,10,11],desc:'Lift-and-shift of on-premise infrastructure to hybrid cloud. UAT milestone passed Dec 25 but full deployment has slipped to Jun 26 due to resource contention.',bizImpact:{ba1:{impact:'H',ready:'NR'},ba9:{impact:'M',ready:'R'},ba4:{impact:'L',ready:'NR'}}},
+  {id:3,name:'Finance Process Automation',portfolio:'D',ba:'ba2',type:'BAU',fy:'FY26',q:'Q2',status:'c',progress:100,sponsor:'CFO',impact:'Med',goLiveDisplay:'Sep 25',bizAreas:['ba2','ba8'],roles:['Executives','Senior Leaders','Middle Managers','Operational Enablers'],tlStart:0,tlEnd:2,goLives:[{month:2,date:'Sep 25 — Process automation live'}],activeMonths:[0,1,2],desc:'RPA deployment covering accounts payable, receivable, and month-end reconciliation. Automation of 14 manual processes delivered on schedule.',bizImpact:{ba2:{impact:'H',ready:'R'},ba8:{impact:'M',ready:'R'}}},
+  {id:4,name:'Workforce Redesign',portfolio:'B',ba:'ba3',type:'Strategic',fy:'FY26',q:'Q4',status:'r',progress:28,sponsor:'CHRO',impact:'High',goLiveDisplay:'Jun 26',bizAreas:['ba3','ba10','ba2'],roles:['Executives','Senior Leaders','Middle Managers','Operational Enablers','Frontline'],tlStart:2,tlEnd:11,goLives:[{month:11,date:'Jun 26 — Revised target (delayed)'}],activeMonths:[2,3,4,5,6,7,8,9,10,11],desc:'Spans and layers review, new role framework and grading structure. Manager readiness critically below threshold at 28%. Go-live target revised to Jun 26 — further slippage risk remains.',bizImpact:{ba3:{impact:'H',ready:'NR'},ba10:{impact:'H',ready:'NR'},ba2:{impact:'L',ready:'NR'}}},
+  {id:5,name:'Voice Of Customer Program',portfolio:'C',ba:'ba4',type:'BAU',fy:'FY26',q:'Q1',status:'c',progress:100,sponsor:'CMO',impact:'Med',goLiveDisplay:'Aug 25',bizAreas:['ba4','ba5'],roles:['Senior Leaders','Middle Managers','Operational Enablers','Frontline'],tlStart:0,tlEnd:1,goLives:[{month:1,date:'Aug 25 — Completed on schedule'}],activeMonths:[0,1],desc:'Continuous listening platform — NPS and CSAT embedded across all business areas. Closed loop process fully operational. Delivered ahead of target in Q1.',bizImpact:{ba4:{impact:'H',ready:'R'},ba5:{impact:'M',ready:'R'}}},
+  {id:6,name:'Customer Experience Transformation',portfolio:'C',ba:'ba4',type:'Strategic',fy:'FY26',q:'Q4',status:'a',progress:42,sponsor:'CCO',impact:'High',goLiveDisplay:'Jun 26',bizAreas:['ba4','ba5','ba6'],roles:['Executives','Senior Leaders','Middle Managers','Frontline'],tlStart:3,tlEnd:11,goLives:[{month:11,date:'Jun 26 — CX platform launch'}],activeMonths:[3,4,5,6,7,8,9,10,11],desc:'End-to-end customer journey redesign. New CRM platform, digital self-service capability and service model changes. Scope has expanded ~30% since initiation — scope freeze now in place.',bizImpact:{ba4:{impact:'H',ready:'NR'},ba5:{impact:'H',ready:'NR'},ba6:{impact:'M',ready:'NR'}}},
+  {id:7,name:'Security & Compliance Uplift',portfolio:'A',ba:'ba9',type:'BAU',fy:'FY26',q:'Q3',status:'c',progress:100,sponsor:'CRO',impact:'Med',goLiveDisplay:'Jan 26',bizAreas:['ba9','ba8','ba1'],roles:['Executives','Senior Leaders','Middle Managers','Operational Enablers'],tlStart:1,tlEnd:6,goLives:[{month:6,date:'Jan 26 — Delivered on schedule'}],activeMonths:[1,2,3,4,5,6],desc:'Enterprise-wide controls uplift including policy refresh, mandatory training and audit remediation. Compliance milestone met ahead of regulatory deadline. Programme closed.',bizImpact:{ba9:{impact:'H',ready:'R'},ba8:{impact:'M',ready:'R'},ba1:{impact:'L',ready:'R'}}},
+  {id:8,name:'Shared Services Consolidation',portfolio:'D',ba:'ba2',type:'Strategic',fy:'FY26',q:'Q4',status:'r',progress:18,sponsor:'COO',impact:'High',goLiveDisplay:'Jun 26',bizAreas:['ba2','ba3','ba8','ba10'],roles:['Executives','Senior Leaders','Middle Managers','Operational Enablers','Frontline'],tlStart:2,tlEnd:11,goLives:[{month:11,date:'Jun 26 — Revised target (delayed)'}],activeMonths:[2,3,4,5,6,7,8,9,10,11],desc:'Consolidation of HR, finance and legal enabling functions into a shared services model. Significantly behind plan. Sponsor availability resolved but capability gap and resistance remain high.',bizImpact:{ba2:{impact:'H',ready:'NR'},ba3:{impact:'H',ready:'NR'},ba8:{impact:'M',ready:'NR'},ba10:{impact:'M',ready:'NR'}}},
+  {id:9,name:'Digital Workplace Rollout',portfolio:'A',ba:'ba1',type:'Strategic',fy:'FY26',q:'Q4',status:'g',progress:72,sponsor:'CDO',impact:'High',goLiveDisplay:'Jun 26',bizAreas:['ba1','ba2','ba3','ba4'],roles:['Executives','Senior Leaders','Middle Managers','Operational Enablers','Frontline'],tlStart:4,tlEnd:11,goLives:[{month:11,date:'Jun 26 — Full deployment'}],activeMonths:[4,5,6,7,8,9,10,11],desc:'Organisation-wide rollout of modern collaboration tools including AI-assisted productivity features, unified comms, and digital workflow automation. Adoption metrics tracking ahead of target.',bizImpact:{ba1:{impact:'H',ready:'R'},ba2:{impact:'H',ready:'R'},ba3:{impact:'M',ready:'R'},ba4:{impact:'M',ready:'R'}}},
+  {id:10,name:'Data & Reporting Modernisation',portfolio:'A',ba:'ba2',type:'Strategic',fy:'FY26',q:'Q4',status:'a',progress:30,sponsor:'CDO',impact:'High',goLiveDisplay:'May 26',bizAreas:['ba2','ba1','ba7'],roles:['Executives','Senior Leaders','Middle Managers','Operational Enablers','Frontline'],tlStart:4,tlEnd:10,goLives:[{month:10,date:'May 26 — Reporting platform launch'}],activeMonths:[4,5,6,7,8,9,10],desc:'Replacement of legacy reporting tools with a modern analytics platform. Self-serve capability for all business areas. Business readiness risk given scale of change to reporting workflows.',bizImpact:{ba2:{impact:'H',ready:'NR'},ba1:{impact:'H',ready:'NR'},ba7:{impact:'M',ready:'R'}}},
+];
+
+const INIT_RISKS = [
+  {title:'Critical Integration Dependency Unresolved',severity:'h',program:'Workforce Redesign',owner:'COO',desc:'Integration between legacy HRIS and new role framework tooling remains unresolved. Risk of delayed go-live and data integrity issues if not escalated by end of Q3.',action:'Escalate to Steering Committee — decision and resource commitment required by Week 3'},
+  {title:'Change Fatigue Across Frontline Teams',severity:'h',program:'Cloud Infrastructure Migration',owner:'CHRO',desc:'Frontline staff are impacted by 4+ concurrent initiatives. Engagement survey scores have declined 8 points quarter-on-quarter. Adoption risk is escalating.',action:'Implement change load review — consider phasing Cloud Migration delivery to reduce concurrent impact'},
+  {title:'AI Copilot Data Governance Gap',severity:'h',program:'Enterprise AI Copilot Rollout',owner:'CDO',desc:'Data classification and access controls are not yet in place to support safe Copilot deployment. Risk of sensitive data exposure if rollout proceeds without governance guardrails.',action:'Pause deployment to non-pilot groups until data governance framework is approved by CISO'},
+  {title:'Scope Creep — Customer Experience Transformation',severity:'m',program:'Customer Experience Transformation',owner:'CCO',desc:'Stakeholder-driven scope additions have expanded the original delivery boundary by approximately 30%. Budget and timeline impact has not yet been formally assessed.',action:'Scope freeze decision required from Programme Board at next session — options paper to be tabled'},
+];
+
+const STK_RISKS = [
+  {title:'Frontline Change Saturation',severity:'h',group:'Customer Service',owner:'CHRO',desc:'Customer Service teams carry critical concurrent load across months 3–5 of FY26. Without structured intervention, fatigue and active resistance to adoption are likely outcomes.',action:'Implement structured change breaks and phased communications plan — brief People Leaders by end of month'},
+  {title:'Middle Manager Readiness Gap',severity:'h',group:'People',owner:'CHRO',desc:'Readiness averaging 38% across active initiatives, significantly below the 60% minimum threshold. Managers are not equipped to lead their teams through current change volumes.',action:'Launch manager change capability program in Q3 — prioritise Workforce Redesign and Shared Services cohorts'},
+  {title:'Digital Literacy Gap Across Business Areas',severity:'m',group:'Operations',owner:'CDO',desc:'Digital Workplace rollout is exposing a significant digital literacy gap. Staff are uncertain how to use new tools safely and effectively, increasing the risk of low adoption.',action:'Commission Digital Essentials training program — mandatory completion before full access is granted'},
+  {title:'Visible Executive Sponsorship Absent',severity:'m',group:'Strategy',owner:'CEO',desc:'Two active strategic initiatives lack visible and active senior sponsorship. This is creating ambiguity about organisational priority and undermining change momentum.',action:'Sponsorship health check — assign or re-confirm sponsors by end of current month; brief at leadership forum'},
+];
+
+/* ── HELPERS ──────────────────────────────────────────────────────────── */
+const TL_BG = {g:'#C0DD97',a:'#FAC775',r:'#F7C1C1',c:'#B5D4F4'};
+const TL_TEXT = {g:'#27500A',a:'#633806',r:'#791F1F',c:'#0C447C'};
+const PC = {g:'#97C459',a:'#FAC775',r:'#F09595',c:'#85B7EB'};
+
+function hc(v){return v<=0?'h0':v<=2?'h1':v<=4?'h2':v<=6?'h3':'h4';}
+function sl(s){return{g:'On Track',a:'At Risk',r:'Delayed',c:'Complete'}[s]||s;}
+function rc(s){return{g:'rag-g',a:'rag-a',r:'rag-r',c:'rag-c'}[s]||'';}
+function bc(s){return s==='r'?'rb':s==='a'?'ab':'';}
+function sevClass(s){return s==='h'?'sev-h':s==='m'?'sev-m':'sev-l';}
+function sevLabel(s){return s==='h'?'High':s==='m'?'Medium':'Low';}
+function impactLabel(i){return{H:'High',M:'Medium',L:'Low',N:'None'}[i]||i;}
+
+function readyIcon(r){
+  if(r==='R') return `<span class="icon-ready"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><polyline points="2,6 5,9 10,3" stroke="#3B6D11" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>`;
+  if(r==='NR') return `<span class="icon-notready"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><line x1="3" y1="3" x2="9" y2="9" stroke="#A32D2D" stroke-width="1.8" stroke-linecap="round"/><line x1="9" y1="3" x2="3" y2="9" stroke="#A32D2D" stroke-width="1.8" stroke-linecap="round"/></svg></span>`;
+  return `<span class="icon-na">N/A</span>`;
+}
+
+function getMonths(){
+  const yr=document.getElementById('f-yr').value;
+  const q=document.getElementById('f-qtr').value;
+  const all=FY_MONTHS[yr]||FY_MONTHS['FY26'];
+  if(q==='all') return all;
+  const off=QTR_OFFSET[q]||0;
+  return all.slice(off,off+3);
+}
+
+function getQOffset(){
+  const q=document.getElementById('f-qtr').value;
+  return q==='all'?0:(QTR_OFFSET[q]||0);
+}
+
+function getFiltered(){
+  const q=document.getElementById('f-qtr').value,yr=document.getElementById('f-yr').value,
+        pf=document.getElementById('f-pf').value,ba=document.getElementById('f-ba').value,
+        tp=document.getElementById('f-type').value;
+  return INITIATIVES.filter(p=>{
+    if(p.fy!==yr) return false;
+    if(q!=='all'){
+      const off=QTR_OFFSET[q];
+      const qM=[off,off+1,off+2];
+      if(!p.activeMonths.some(m=>qM.includes(m))) return false;
+    }
+    if(pf!=='all'&&p.portfolio!==pf) return false;
+    if(ba!=='all'&&p.ba!==ba) return false;
+    if(tp!=='all'&&p.type!==tp) return false;
+    return true;
+  });
+}
+
+/* ── RENDER FUNCTIONS ─────────────────────────────────────────────────── */
+function renderMetrics(data){
+  const onT=data.filter(d=>d.status==='g').length,
+        risk=data.filter(d=>d.status==='a').length,
+        del=data.filter(d=>d.status==='r').length,
+        comp=data.filter(d=>d.status==='c').length;
+  document.getElementById('metrics-row').innerHTML=`
+    <div class="met"><div class="met-lbl">Total Initiatives</div><div class="met-val">${data.length}</div><div class="met-sub" style="color:var(--text-tertiary)">${data.filter(d=>d.type==='Strategic').length} Strategic · ${data.filter(d=>d.type==='BAU').length} BAU</div></div>
+    <div class="met"><div class="met-lbl">On Track</div><div class="met-val" style="color:var(--green-text)">${onT}</div><div class="met-sub" style="color:var(--green-text)">${data.length?Math.round(onT/data.length*100):0}% Of Active Portfolio</div></div>
+    <div class="met"><div class="met-lbl">At Risk / Delayed</div><div class="met-val" style="color:var(--red-text)">${risk+del}</div><div class="met-sub" style="color:var(--red-text)">${del} Require Escalation</div></div>
+    <div class="met"><div class="met-lbl">Complete</div><div class="met-val" style="color:var(--blue-text)">${comp}</div><div class="met-sub" style="color:var(--text-tertiary)">${data.length?Math.round(comp/data.length*100):0}% Delivered</div></div>`;
+}
+
+function renderStkMetrics(data){
+  const months=getMonths();
+  const qOff=getQOffset();
+  const mthLoads=months.map((_,i)=>data.filter(p=>p.activeMonths.includes(qOff+i)).length);
+  const peakIdx=mthLoads.indexOf(Math.max(...mthLoads));
+  const peakMon=months[peakIdx]||'—';
+  const peakVal=Math.max(...mthLoads,0);
+  // Compute high-load areas: count total active months per BA across all months
+  const baLoads=BIZ_KEYS.map(key=>{
+    let total=0;
+    months.forEach((_,mi)=>{
+      const gm=qOff+mi;
+      total+=data.filter(p=>p.activeMonths.includes(gm)&&p.bizAreas&&p.bizAreas.includes(key)).length;
+    });
+    return {key,name:BA_NAMES[key],total};
+  });
+  baLoads.sort((a,b)=>b.total-a.total);
+  const topAreas=baLoads.filter(b=>b.total>0).slice(0,3);
+  const highLoadText=topAreas.length?topAreas.map(b=>b.name).join(', '):'None';
+  const highLoadCount=topAreas.length;
+  document.getElementById('stk-metrics-row').innerHTML=`
+    <div class="met"><div class="met-lbl">Business Areas</div><div class="met-val">10</div><div class="met-sub" style="color:var(--text-tertiary)">Across All Portfolios</div></div>
+    <div class="met"><div class="met-lbl">High-Load Areas</div><div class="met-val" style="color:var(--red-text)">${highLoadCount}</div><div class="met-sub" style="color:var(--red-text)">${highLoadText}</div></div>
+    <div class="met"><div class="met-lbl">High-Load Month</div><div class="met-val" style="color:var(--amber-text)">${peakMon}</div><div class="met-sub" style="color:var(--amber-text)">${peakVal} Concurrent Initiatives</div></div>
+    <div class="met"><div class="met-lbl">Change Fatigue Risk</div><div class="met-val" style="color:var(--red-text)">High</div><div class="met-sub" style="color:var(--red-text)">Intervention Required</div></div>`;
+}
+
+
+function renderPortfolios(data){
+  const pfKeys=['A','B','C','D'];
+  const allPct=data.length?Math.round(data.filter(d=>d.status==='g'||d.status==='c').length/data.length*100):0;
+  const allBad=data.filter(d=>d.status==='r'||d.status==='a').length;
+  let html=`<div class="pf-card active" onclick="setPF('all',this)">
+    <div class="pf-name">All Portfolios</div>
+    <div class="pf-count">${data.length} <span>initiatives</span></div>
+    <div class="pf-bar-wrap"><div class="pf-bar" style="width:${allPct}%"></div></div>
+    <div class="pf-note" style="color:${allBad>0?'var(--red-text)':'var(--green-text)'}">${allBad>0?allBad+' At Risk / Delayed':'All On Track'}</div></div>`;
+  pfKeys.forEach(k=>{
+    const sub=data.filter(d=>d.portfolio===k);
+    const pct=sub.length?Math.round(sub.filter(d=>d.status==='g'||d.status==='c').length/sub.length*100):0;
+    const bad=sub.filter(d=>d.status==='r'||d.status==='a').length;
+    html+=`<div class="pf-card" id="pf-${k}" onclick="setPF('${k}',this)">
+      <div class="pf-name">${PF_NAMES[k]}</div>
+      <div class="pf-count">${sub.length} <span>initiatives</span></div>
+      <div class="pf-bar-wrap"><div class="pf-bar" style="width:${pct}%"></div></div>
+      <div class="pf-note" style="color:${bad>0?'var(--red-text)':'var(--green-text)'}">${bad>0?bad+' At Risk / Delayed':'All On Track'}</div></div>`;
+  });
+  document.getElementById('pf-row').innerHTML=html;
+}
+
+function renderCards(data){
+  if(!data.length){
+    document.getElementById('init-grid').innerHTML='<div style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--text-secondary);font-size:13px">No initiatives match the current filters.</div>';
+    return;
+  }
+  document.getElementById('init-grid').innerHTML=data.map(p=>`
+    <div class="init-card ${bc(p.status)}">
+      <div class="tooltip-box">${p.desc}</div>
+      <div class="init-head"><div class="init-name">${p.name}</div><span class="rag-badge ${rc(p.status)}">${sl(p.status)}</span></div>
+      <div class="init-meta">
+        <div class="imt">Portfolio: <span>${PF_NAMES[p.portfolio]}</span></div>
+        <div class="imt">Sponsor: <span>${p.sponsor}</span></div>
+      </div>
+      <div class="prog-lbl"><span>Delivery Progress</span><span style="font-family:var(--font-mono)">${p.progress}%</span></div>
+      <div class="pw"><div class="pb" style="width:${p.progress}%;background:${PC[p.status]}"></div></div>
+      <div class="init-tags">
+        <span class="itag">${p.type}</span>
+        <span class="itag">${BA_NAMES[p.ba]}</span>
+        ${p.goLiveDisplay?`<span class="itag" style="color:var(--text-primary);font-weight:500">Go-Live: ${p.goLiveDisplay}</span>`:''}
+      </div>
+    </div>`).join('');
+}
+
+function renderTimeline(data){
+  const months=getMonths();
+  const N=months.length;
+  const qOff=getQOffset();
+  // Today = Apr 2026 = month index 9 in FY26
+  const todayGlobal=9;
+  const todayLocal=todayGlobal-qOff;
+  const todayPct=(todayLocal>=0&&todayLocal<N)?((todayLocal+0.5)/N*100):-1;
+
+  document.getElementById('tl-labels').innerHTML='<div style="height:24px"></div>'+data.map(p=>`<div class="tl-rl">${p.name}</div>`).join('');
+
+  const monthsHtml=`<div class="tl-months" style="grid-template-columns:repeat(${N},1fr)">`+months.map(m=>`<div class="tl-mon">${m}</div>`).join('')+'</div>';
+
+  const rowsHtml=data.map(p=>{
+    const localStart=Math.max(0,p.tlStart-qOff);
+    const localEnd=Math.min(N,p.tlEnd-qOff+1);
+    const todayMarker=todayPct>=0?`<div class="tl-today-line" style="left:calc(${todayPct.toFixed(1)}% - 0.75px)"></div>`:'';
+    if(localEnd<=0||localStart>=N) return `<div class="tl-br" style="grid-template-columns:repeat(${N},1fr)">${todayMarker}</div>`;
+    const cs=Math.max(1,localStart+1);
+    const ce=Math.min(N+1,localEnd+1);
+    const multi=p.goLives.length>1;
+    const flags=p.goLives.map((gl,gi)=>{
+      const localGL=gl.month-qOff;
+      if(localGL<0||localGL>=N) return '';
+      const pct=((localGL+0.5)/N*100).toFixed(1);
+      const tip=multi?`Phase ${gi+1}: ${gl.date}`:gl.date;
+      return `<div class="gl-flag" style="left:calc(${pct}% - 1px)"><div class="flag-pole"></div><div class="flag-tri"></div><div class="flag-tip">${tip}</div></div>`;
+    }).join('');
+    return `<div class="tl-br" style="grid-template-columns:repeat(${N},1fr)">
+      ${todayMarker}
+      <div style="grid-column:${cs}/${ce};display:flex;align-items:center;position:relative">
+        <div class="tl-bar" style="width:100%;background:${TL_BG[p.status]};color:${TL_TEXT[p.status]}">${p.name}</div>
+      </div>
+      ${flags}
+    </div>`;
+  }).join('');
+
+  document.getElementById('tl-chart').innerHTML=monthsHtml+`<div class="tl-rows">${rowsHtml}</div>`;
+}
+
+function renderHeatmap(data){
+  const months=getMonths();
+  const qOff=getQOffset();
+  const head='<thead><tr><th class="rh">Business Area</th>'+months.map(m=>`<th>${m}</th>`).join('')+'</tr></thead>';
+  const body='<tbody>'+BIZ_AREAS.map((row,ri)=>{
+    const bizKey=BIZ_KEYS[ri];
+    const cells=months.map((_,mi)=>{
+      const gm=qOff+mi;
+      const active=data.filter(p=>p.activeMonths.includes(gm)&&p.bizAreas&&p.bizAreas.includes(bizKey));
+      const v=active.length;
+      if(!v) return `<td class="h0">0</td>`;
+      const tipHtml=`<strong style="display:block;margin-bottom:6px;font-weight:500;border-bottom:1px solid rgba(128,128,128,0.2);padding-bottom:4px">${row} — ${months[mi]}</strong>`
+        +active.map(p=>{
+          const roles=(p.roles||[]).map(r=>`<div style="padding-left:8px;color:var(--text-secondary);line-height:1.6;font-family:var(--font)">· ${r}</div>`).join('');
+          return `<div style="margin-bottom:5px"><div style="font-weight:500">${p.name}</div>${roles}</div>`;
+        }).join('');
+      return `<td class="${hc(v)}" data-tip="${encodeURIComponent(tipHtml)}" onmouseenter="showHeatTip(event,this)" onmouseleave="hideHeatTip()">${v}</td>`;
+    }).join('');
+    return `<tr><td class="rl">${row}</td>${cells}</tr>`;
+  }).join('')+'</tbody>';
+  document.getElementById('heat-table').innerHTML=head+body;
+}
+
+function renderReadinessTable(data){
+  if(!data.length){
+    document.getElementById('ready-table').innerHTML='<tr><td colspan="99" style="padding:1rem;text-align:center;color:var(--text-secondary);font-size:12px">No initiatives match the current filters.</td></tr>';
+    return;
+  }
+  let thead='<thead><tr><th class="prog-h" rowspan="2">Initiative</th>';
+  BIZ_AREAS.forEach(s=>{thead+=`<th class="grp-h" colspan="2">${s}</th>`;});
+  thead+='</tr><tr>';
+  BIZ_AREAS.forEach(()=>{thead+='<th style="width:66px;min-width:66px">Impact</th><th style="width:52px;min-width:52px">Ready</th>';});
+  thead+='</tr></thead>';
+  let tbody='<tbody>';
+  data.forEach(p=>{
+    tbody+=`<tr><td class="prog-name">${p.name}</td>`;
+    BIZ_KEYS.forEach(key=>{
+      const cell=(p.bizImpact&&p.bizImpact[key])||{impact:'N',ready:'NA'};
+      const readiness=cell.impact==='N'?'NA':cell.ready;
+      tbody+=`<td style="padding:4px 6px;border:1px solid var(--border)"><span class="impact-${cell.impact}">${impactLabel(cell.impact)}</span></td>`;
+      tbody+=`<td style="padding:4px 6px;border:1px solid var(--border)">${readyIcon(readiness)}</td>`;
+    });
+    tbody+='</tr>';
+  });
+  tbody+='</tbody>';
+  document.getElementById('ready-table').innerHTML=thead+tbody;
+}
+
+function renderRiCards(id,list){
+  document.getElementById(id).innerHTML=list.map(r=>`
+    <div class="ri-card">
+      <div class="ri-head"><div class="ri-title">${r.title}</div><span class="ri-sev ${sevClass(r.severity)}">${sevLabel(r.severity)}</span></div>
+      <div class="ri-meta">${r.program?'Initiative: <span>'+r.program+'</span>':'Business Area: <span>'+r.group+'</span>'} &nbsp;·&nbsp; Owner: <span>${r.owner}</span></div>
+      <div class="ri-desc">${r.desc}</div>
+      <div class="ri-action">Recommended Action: <span>${r.action}</span></div>
+    </div>`).join('');
+}
+
+/* ── TOOLTIPS ─────────────────────────────────────────────────────────── */
+function showHeatTip(e,el){
+  const tip=document.getElementById('heat-tooltip');
+  tip.innerHTML=decodeURIComponent(el.dataset.tip);
+  tip.style.display='block';
+  const rect=el.getBoundingClientRect();
+  let left=rect.left;
+  let top=rect.bottom+6;
+  if(left+240>window.innerWidth) left=window.innerWidth-250;
+  if(rect.bottom+180>window.innerHeight) top=rect.top-6;
+  tip.style.left=Math.max(4,left)+'px';
+  tip.style.top=top+'px';
+}
+function hideHeatTip(){
+  document.getElementById('heat-tooltip').style.display='none';
+}
+
+/* ── ACTIONS ──────────────────────────────────────────────────────────── */
+function setPF(k,el){
+  document.querySelectorAll('.pf-card').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('f-pf').value=k==='all'?'all':k;
+  applyFilters(true);
+}
+
+function applyFilters(skipPF){
+  const data=getFiltered();
+  renderMetrics(data);
+  renderStkMetrics(data);
+  if(!skipPF) renderPortfolios(data);
+  renderCards(data);
+  renderTimeline(data);
+  renderHeatmap(data);
+  renderReadinessTable(data);
+}
+
+function switchTab(tab){
+  document.getElementById('tab-init').classList.toggle('active',tab==='init');
+  document.getElementById('tab-stk').classList.toggle('active',tab==='stk');
+  document.getElementById('view-init').classList.toggle('active',tab==='init');
+  document.getElementById('view-stk').classList.toggle('active',tab==='stk');
+}
+
+function toggleDark(on){
+  document.body.classList.toggle('dark-mode',on);
+}
+
+/* ── INIT ─────────────────────────────────────────────────────────────── */
+applyFilters();
+renderRiCards('init-ri-grid',INIT_RISKS);
+renderRiCards('stk-ri-grid',STK_RISKS);
+</script>
+</body>
+</html>
